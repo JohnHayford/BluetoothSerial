@@ -28,13 +28,21 @@
             target-dir="src/com/megster/cordova"/>
         <source-file src="src/android/com/megster/cordova/BluetoothSerialService.java"
             target-dir="src/com/megster/cordova"/>
+        <source-file src="src/android/com/megster/cordova/PairingReceiver.java"
+            target-dir="src/com/megster/cordova"/>
 
+<config-file target="AndroidManifest.xml" parent="/manifest/application">
+<receiver android:name="com.megster.cordova.PairingReceiver" android:enabled="false">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
+            </intent-filter>
+        </receiver>
+</config-file>
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.BLUETOOTH" />
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
         </config-file>
-
     </platform>
 
     <platform name="ios">

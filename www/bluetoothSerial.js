@@ -125,6 +125,9 @@ module.exports = {
 
     setName: function (newName) {
         cordova.exec(null, null, "BluetoothSerial", "setName", [newName]);
+    },  
+    setPin: function (newPin) {
+        cordova.exec(null, null, "BluetoothSerial", "setPin", [newPin]);
     },
 
     setDiscoverable: function (discoverableDuration) {
@@ -133,7 +136,7 @@ module.exports = {
 
 
 };
-
+ 
 var stringToArrayBuffer = function(str) {
     var ret = new Uint8Array(str.length);
     for (var i = 0; i < str.length; i++) {

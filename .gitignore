@@ -1,1 +1,8 @@
 *.DS_Store
+platforms/
+examples/**/plugins/
+**/settings.json
+**/android.json
+**/fetch.json
+.idea/
+*.iml

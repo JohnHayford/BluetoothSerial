@@ -242,10 +242,10 @@ public class BluetoothSerial extends CordovaPlugin {
 
             if (cordova.hasPermission(ACCESS_COARSE_LOCATION) && cordova.hasPermission(ACCESS_BACKGROUND_LOCATION)) {
                 discoverUnpairedDevices(callbackContext);
-            } else if (cordova.hasPermission(ACCESS_BACKGROUND_LOCATION) {
+            } else if (cordova.hasPermission(ACCESS_BACKGROUND_LOCATION)) {
                 permissionCallback = callbackContext;
                 cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_COARSE_LOCATION);
-            } else if (cordova.hasPermission(ACCESS_COARSE_LOCATION) {
+            } else if (cordova.hasPermission(ACCESS_COARSE_LOCATION)) {
                 permissionCallback = callbackContext;
                 cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_BACKGROUND_LOCATION);
             } else{                

@@ -250,7 +250,8 @@ public class BluetoothSerial extends CordovaPlugin {
                 cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_BACKGROUND_LOCATION);
             } else{                
                 permissionCallback = callbackContext;
-                cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_BACKGROUND_LOCATION, ACCESS_COARSE_LOCATION);
+                String [] permissions = { ACCESS_BACKGROUND_LOCATION, ACCESS_COARSE_LOCATION};
+                cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, permissions);
             }
 
         } else if (action.equals(SET_DEVICE_DISCOVERED_LISTENER)) {

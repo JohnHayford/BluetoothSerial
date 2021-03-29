@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.nfc.Tag;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -94,7 +95,8 @@ public class BluetoothSerial extends CordovaPlugin {
     // Android 23 requires user to explicitly grant permission for location to discover unpaired
     private static final String ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final String BLUETOOTH_PRIVILEGED = Manifest.permission.BLUETOOTH_PRIVILEGED;
-    private static final String ACCESS_BACKGROUND_LOCATION = Manifest.permission.ACCESS_BACKGROUND_LOCATION;
+    // private static final String ACCESS_BACKGROUND_LOCATION = Manifest.permission.ACCESS_BACKGROUND_LOCATION;
+    private static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
     private static final String ACCESS_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int CHECK_PERMISSIONS_REQ_CODE = 2;
     private CallbackContext permissionCallback;
@@ -239,19 +241,32 @@ public class BluetoothSerial extends CordovaPlugin {
             cordova.startActivityForResult(this, intent, REQUEST_ENABLE_BLUETOOTH);
 
         } else if (action.equals(DISCOVER_UNPAIRED)) {
-
-            if (cordova.hasPermission(ACCESS_COARSE_LOCATION) && cordova.hasPermission(ACCESS_BACKGROUND_LOCATION)) {
+            boolean needsBackgroundPerm = !cordova.hasPermission(ACCESS_BACKGROUND_LOCATION) &&  Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+            if (
+                    cordova.hasPermission(ACCESS_COARSE_LOCATION) &&
+                    cordova.hasPermission(ACCESS_FINE_LOCATION) &&
+                    !needsBackgroundPerm
+            ) {
                 discoverUnpairedDevices(callbackContext);
-            } else if (cordova.hasPermission(ACCESS_BACKGROUND_LOCATION)) {
-                permissionCallback = callbackContext;
-                cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_COARSE_LOCATION);
-            } else if (cordova.hasPermission(ACCESS_COARSE_LOCATION)) {
+
+            } else if (cordova.hasPermission(ACCESS_COARSE_LOCATION) && cordova.hasPermission(ACCESS_FINE_LOCATION) && needsBackgroundPerm) {
                 permissionCallback = callbackContext;
                 cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_BACKGROUND_LOCATION);
-            } else{                
+            } else if (cordova.hasPermission(ACCESS_COARSE_LOCATION) && !needsBackgroundPerm) {
                 permissionCallback = callbackContext;
-                String [] permissions = { ACCESS_BACKGROUND_LOCATION, ACCESS_COARSE_LOCATION};
-                cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, permissions);
+                cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_FINE_LOCATION);
+            } else if (cordova.hasPermission(ACCESS_FINE_LOCATION) && !needsBackgroundPerm) {
+                permissionCallback = callbackContext;
+                cordova.requestPermission(this, CHECK_PERMISSIONS_REQ_CODE, ACCESS_COARSE_LOCATION);
+            } else{
+                permissionCallback = callbackContext;
+                if (needsBackgroundPerm){
+                String [] permissions = { ACCESS_BACKGROUND_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION };
+                cordova.requestPermissions(this, CHECK_PERMISSIONS_REQ_CODE, permissions);
+                }else{                    
+                String [] permissions = { ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION };
+                cordova.requestPermissions(this, CHECK_PERMISSIONS_REQ_CODE, permissions);
+                }
             }
 
         } else if (action.equals(SET_DEVICE_DISCOVERED_LISTENER)) {
